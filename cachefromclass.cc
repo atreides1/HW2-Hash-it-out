@@ -24,7 +24,7 @@ struct Cache::Impl {
     index_type Cache::space_used() const
     {
     }
-    ... copy all functions into here ...
+
 };
 
 Cache::Cache(index_type maxmem,
@@ -55,10 +55,10 @@ Cache::val_type Cache::get(key_type key, index_type& val_size) const;
 // Delete an object from the cache, if it's still there
 void Cache::del(key_type key);
 {
-    pImpl_->del(key,val,size);
+    pImpl_->del(key);
 }
 // Compute the total amount of memory used up by all cache values (not keys)
 Cache::index_type Cache::space_used() const;
 {
-   return pImpl_->space_used(key,val,size);
+   return pImpl_->space_used();
 }
