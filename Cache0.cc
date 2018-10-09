@@ -32,7 +32,6 @@ struct Cache::Impl {
   // **********WHAT DOES THIS MEAN????????????????????????*********** Both the key and the value are to be deep-copied (not just pointer copied).
   // If maxmem capacity is exceeded, sufficient values will be removed
   // from the cache to accomodate the new value.
-//  void set(key_type key, val_type val, index_type size);
         void set(key_type key, val_type val, index_type size)
         {
                 //while (bytes_used + size >= maxmem)
@@ -63,7 +62,6 @@ struct Cache::Impl {
         }
 
   // Delete an object from the cache, if it's still there
-//  void del(key_type key);
         void del(key_type key)
         {
                 index_type byte_size = key_bytes.at(key);
@@ -72,7 +70,6 @@ struct Cache::Impl {
         }
 
   // Compute the total amount of memory used up by all cache values (not keys)
-//  index_type space_used() const;
         index_type space_used() const
         {
                 return bytes_used_;
