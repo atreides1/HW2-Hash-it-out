@@ -1,12 +1,22 @@
 #include "cache.hh"
+#include <unordered_map>
+#include <vector>
+#include <iostream>
 struct Cache::Impl {
         index_type maxmem_;
         evictor_type evictor_;
         hash_func hasher_;
+        index_type bytes_used_;
 
+        std::unordered_map<std::string, const void*> storage;
+
+        std::unordered_map<std::string, uint32_t> key_bytes;
+        //std::vector<key_type> keys_;
+        //std::vector<val_type> values_;
+        //std::vector<index_type> sizes_;
 
         Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
-        :maxmem_(maxmem), evictor_(evictor), hasher_(hasher)
+        :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0)
         {
 
         }
@@ -15,13 +25,18 @@ struct Cache::Impl {
 
         void set(key_type key, val_type val, index_type size)
         {
+                //code to save key, value, and size somewhere
+                storage[key] = val;
+                key_bytes[key] = size;
+                bytes_used_ += size;
 
 
         }
 
         val_type get(key_type key, index_type& val_size) const
         {
-                return 0;
+                //val_size = key_bytes[key];
+                return storage[key];
         }
 
         void del(key_type key)
@@ -32,9 +47,10 @@ struct Cache::Impl {
 
         index_type space_used() const
         {
-                return 0;
+                return bytes_used_;
         }
 };
+
 
 // Create a new cache object with a given maximum memory capacity.
 Cache::Cache(index_type maxmem,
