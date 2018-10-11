@@ -39,7 +39,12 @@ struct Cache::Impl {
                         //del(    ); OR Do I call some sort of evictor?
                         //Don't do the thing, evict? Del rand val?
                 //}
-
+                // if size is too large, evict an item
+                if ((size + bytes_used_) >= maxmem_)
+                {
+                        evictor_();
+                }
+          
                 storage[key] = val;
                 key_bytes[key] = size;
                 bytes_used_ += size;
@@ -67,6 +72,7 @@ struct Cache::Impl {
                 index_type byte_size = key_bytes.at(key);
                 bytes_used_ -= byte_size;
                 storage.erase(key);
+                key_bytes.erase(key);
         }
 
   // Compute the total amount of memory used up by all cache values (not keys)
