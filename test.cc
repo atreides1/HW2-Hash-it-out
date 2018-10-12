@@ -24,6 +24,7 @@ int test_insert()
 }
 
 //test: query key
+
 int test_query()
 {
         std::cout << "Query key:" << '\n';
@@ -69,13 +70,42 @@ int test_insert_and_mod()
 
 }
 //test: insert key and delete
+int test_insert_and_delete()
+{
+        std::cout << "Create cache and insert key:" << '\n';
+        Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+        std::string key = "a";
+        char val[] = "z";
+        uint32_t size = 1;
+        c.set(key, val, size);
+        std::cout << val << '\n';
+        std::cout << "deleting... " << c.get(key, size);
+        c.del(key);
+        return 0;
+}
+
 //test: query key that was evicted
 
+int test_delete_and_query()
+{
+        std::cout << "Create cache and insert key:" << '\n';
+        Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+        std::string key = "a";
+        char val[] = "z";
+        uint32_t size = 1;
+        c.set(key, val, size);
+        std::cout << val << '\n';
+        std::cout << "deleting... " << c.get(key, size);
+        c.del(key);
+        std::cout << "access deleted val: " << c.get(key, size);
+        return 0;
+}
 int main()
 {
         test_insert();
         test_query();
         //test_query_uninserted();
         test_insert_and_mod();
+        test_insert_and_delete()
         return 0;
 }
