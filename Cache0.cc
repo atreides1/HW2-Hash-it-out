@@ -42,7 +42,8 @@ struct Cache::Impl {
                 // if size is too large, evict an item
                 if ((size + bytes_used_) >= maxmem_)
                 {
-                        evictor_();
+                        //maybe del(evictor_());
+			evictor_();
                 }
           
                 storage[key] = val;
@@ -57,13 +58,18 @@ struct Cache::Impl {
   // Sets the actual size of the returned value (in bytes) in val_size.
         val_type get(key_type key, index_type& val_size) const
         {
-                // = key_bytes[key];
-                //return storage[key];
-
-                val_type val_at = storage.at(key);
-                index_type actual_size = key_bytes.at(key);
-                val_size = actual_size;
-                return val_at;
+		if (storage.count(key) > 0)
+		{
+                	val_type val_at = storage.at(key);
+                	index_type actual_size = key_bytes.at(key);
+                	val_size = actual_size;
+			return val_at;
+		}
+		else
+		{
+			std::cout << "Value not found.";
+			return 0;	
+		}
         }
 
   // Delete an object from the cache, if it's still there
