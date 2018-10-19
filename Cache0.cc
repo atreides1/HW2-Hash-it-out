@@ -80,6 +80,7 @@ struct Cache::Impl {
                 bytes_used_ -= byte_size;
                 storage.erase(key);
                 key_bytes.erase(key);
+		std::cout << "Key: " << key << " successfully deleted." << '\n';
         }
 
   // Compute the total amount of memory used up by all cache values (not keys)
