@@ -87,7 +87,6 @@ int test_insert_and_delete()
 	char val[] = "z";
 	uint32_t size = 1;
 	c.set(key, val, size);	
-	std::cout << val << '\n';
 	std::cout << "deleting... "; 
 	c.get(key, size);
 	c.del(key);
@@ -113,6 +112,18 @@ int test_delete_and_query()
 	insert_line();
 	return 0;
 }
+
+//
+int test_delete_uninserted()
+{
+	std::cout << "TEST: Create cache and delete an uninserted key:" << '\n';
+	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	std::string key = "a";
+	std::cout << "deleting... "; 
+	c.del(key);
+	insert_line();
+	return 0;
+}
 int main() 
 {
 	insert_line();
@@ -122,5 +133,6 @@ int main()
 	test_insert_and_mod();
 	test_insert_and_delete();
 	test_delete_and_query();
+	test_delete_uninserted();
 	return 0;
 }
