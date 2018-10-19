@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+#include <map>
  // Disallow cache copies, to simplify memory management.
 //  Cache(const Cache&) = delete;
  // Cache& operator=(const Cache&) = delete;
@@ -13,11 +14,7 @@ struct Cache::Impl {
         index_type bytes_used_;
 
         std::unordered_map<std::string, const void*> storage;
-
-        std::unordered_map<std::string, uint32_t> key_bytes;
-        //std::vector<key_type> keys_;
-        //std::vector<val_type> values_;
-        //std::vector<index_type> sizes_;
+        std::map<std::string, uint32_t> key_bytes;
 
         Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
         :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0)
@@ -25,7 +22,6 @@ struct Cache::Impl {
 
         }
         ~Impl() = default;
-        //declare funcs again
 
   // Add a <key, value> pair to the cache.
   // If key already exists, it will overwrite the old value.
@@ -34,19 +30,13 @@ struct Cache::Impl {
   // from the cache to accomodate the new value.
         void set(key_type key, val_type val, index_type size)
         {
-                //while (bytes_used + size >= maxmem)
-                //{
-                        //del(    ); OR Do I call some sort of evictor?
-                        //Don't do the thing, evict? Del rand val?
-                //}
-                // if size is too large, evict an item
-                if ((size + bytes_used_) >= maxmem_)
+                while (bytes_used + size >= maxmem)
                 {
-                        //maybe del(evictor_());
 			evictor_();
                 }
           
-                storage[key] = val;
+
+		storage[key] = val;
                 key_bytes[key] = size;
                 bytes_used_ += size;
 		std::cout << "Inserting: Key: " << key << ", Value: " << val << '\n';
