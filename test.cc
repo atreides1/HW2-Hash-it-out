@@ -18,7 +18,7 @@ int test_insert()
 	char val[] = "z";
 	uint32_t size = 1;
 	c.set(key, val, size);	
-	std::cout << val << '\n';
+	std::cout << '\n';
 	return 0;
 
 }
@@ -33,14 +33,13 @@ int test_query()
 	char val[] = "z";
 	uint32_t size = 1;
 	c.set(key, val, size);	
-	std::cout << val << '\n';
-	//assert goes here
-	std::cout << c.get(key, size) << '\n';
+	std::cout << '\n';
+	c.get(key, size);
+	std::cout << '\n';
 	return 0;
 
 }
 //test: query key that wasn't inserted
-//this one breaks
 int test_query_uninserted()
 {
 	std::cout << "Query key that wasn't inserted:" << '\n';
@@ -95,7 +94,7 @@ int test_delete_and_query()
 	uint32_t size = 1;
 	c.set(key, val, size);	
 	std::cout << val << '\n';
-	std::cout << "deleting... " << c.get(key, size);
+	std::cout << "deleting... " << c.get(key, size) << '\n';
 	c.del(key);
 	std::cout << "access deleted val: " << c.get(key, size) << '\n';
 	return 0;

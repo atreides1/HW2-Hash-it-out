@@ -49,7 +49,7 @@ struct Cache::Impl {
                 storage[key] = val;
                 key_bytes[key] = size;
                 bytes_used_ += size;
-
+		std::cout << "Inserting: Key: " << key << ", Value: " << val << '\n';
 
         }
 
@@ -63,11 +63,12 @@ struct Cache::Impl {
                 	val_type val_at = storage.at(key);
                 	index_type actual_size = key_bytes.at(key);
                 	val_size = actual_size;
+			std::cout << "Retrieving: Key: " << key << ", Value: " << val_at << '\n';
 			return val_at;
 		}
 		else
 		{
-			std::cout << "Value not found.";
+			std::cout << "Key: " << key << " not found." << '\n';
 			return 0;	
 		}
         }
