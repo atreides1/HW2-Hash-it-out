@@ -3,9 +3,9 @@
 #include <vector>
 #include <iostream>
 #include <map>
- // Disallow cache copies, to simplify memory management.
+// Disallow cache copies, to simplify memory management.
 //  Cache(const Cache&) = delete;
- // Cache& operator=(const Cache&) = delete;
+// Cache& operator=(const Cache&) = delete;
 
 struct Cache::Impl {
         index_type maxmem_;
@@ -66,12 +66,20 @@ struct Cache::Impl {
   // Delete an object from the cache, if it's still there
         void del(key_type key)
         {
-                index_type byte_size = key_bytes.at(key);
-                bytes_used_ -= byte_size;
-                storage.erase(key);
-                key_bytes.erase(key);
-		std::cout << "Key: " << key << " successfully deleted." << '\n';
-        }
+		if (storage.get(key) == 0)
+		{
+			std::cout << "Key not stored in cache." << '\n';
+		}
+		else
+		{
+			index_type byte_size = key_bytes.at(key);
+                	bytes_used_ -= byte_size;
+                	storage.erase(key);
+                	key_bytes.erase(key);
+			std::cout << "Key: " << key << " successfully deleted." << '\n';
+        	}
+
+	}
 
   // Compute the total amount of memory used up by all cache values (not keys)
         index_type space_used() const
