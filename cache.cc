@@ -39,6 +39,8 @@ struct Cache::Impl {
 		storage[key] = val;
                 key_bytes[key] = size;
                 bytes_used_ += size;
+		
+		storage.max_load_factor(.5);
 		std::cout << "Inserting: Key: " << key << ", Value: " << val << '\n';
 
         }
