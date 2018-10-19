@@ -30,7 +30,7 @@ struct Cache::Impl {
   // from the cache to accomodate the new value.
         void set(key_type key, val_type val, index_type size)
         {
-                while (bytes_used + size >= maxmem)
+                while (bytes_used_ + size >= maxmem_)
                 {
 			evictor_();
                 }
@@ -66,7 +66,7 @@ struct Cache::Impl {
   // Delete an object from the cache, if it's still there
         void del(key_type key)
         {
-		if (storage.get(key) == 0)
+		if (storage.count(key) == 0)
 		{
 			std::cout << "Key not stored in cache." << '\n';
 		}
