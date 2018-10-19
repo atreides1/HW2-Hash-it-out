@@ -14,12 +14,11 @@ struct Cache::Impl {
         index_type bytes_used_;
 
         std::unordered_map<std::string, const void*> storage;
-        std::map<std::string, uint32_t> key_bytes;
-
+	std::map<std::string, uint32_t> key_bytes;
         Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
-        :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0)
+        :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0) 
         {
-
+		storage.max_load_factor(.5);
         }
         ~Impl() = default;
 
@@ -40,7 +39,6 @@ struct Cache::Impl {
                 key_bytes[key] = size;
                 bytes_used_ += size;
 		
-		storage.max_load_factor(.5);
 		std::cout << "Inserting: Key: " << key << ", Value: " << val << '\n';
 
         }
