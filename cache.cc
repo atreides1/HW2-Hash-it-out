@@ -12,12 +12,13 @@ struct Cache::Impl {
         evictor_type evictor_;
         hash_func hasher_;
         index_type bytes_used_;
-
+	
+	//hash_func new_hash = [](hash_func hasher) {if (hasher != NULL) { return hasher; } else { return std::hash<key_type>()}}; 
         std::unordered_map<std::string, const void*> storage;
 	std::map<std::string, uint32_t> key_bytes;
         Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
         :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0) 
-        {
+        {	
 		storage.max_load_factor(.5);
         }
         ~Impl() = default;
