@@ -13,8 +13,8 @@ struct Cache::Impl {
         hash_func hasher_;
         index_type bytes_used_;
 	
-	//hash_func new_hash = [](hash_func hasher) {if (hasher != NULL) { return hasher; } else { return std::hash<key_type>()}}; 
-        std::unordered_map<std::string, const void*> storage;
+	hash_func new_hash = [](hash_func hasher) {if (hasher != NULL) { return hasher; } else { return std::function<uint32_t(key_type)>;}}; 
+        std::unordered_map<std::string, const void*, hash_func> storage;
 	std::map<std::string, uint32_t> key_bytes;
         Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
         :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0) 
