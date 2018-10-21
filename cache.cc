@@ -42,7 +42,7 @@ struct Cache::Impl {
         {
                 while (bytes_used_ + size >= maxmem_)
                 {
-			//evictor_FIFO();
+			evictor_FIFO();
                 }
           	//Store keys in evictor vector
 		//evict.push_back(key);
