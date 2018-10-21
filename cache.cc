@@ -1,11 +1,9 @@
 #include "cache.hh"
 #include <unordered_map>
-#include <vector>
+//#include <vector>
 #include <iostream>
 #include <map>
-// Disallow cache copies, to simplify memory management.
-//  Cache(const Cache&) = delete;
-// Cache& operator=(const Cache&) = delete;
+
 
 struct Cache::Impl {
         index_type maxmem_;
@@ -15,18 +13,25 @@ struct Cache::Impl {
 	
 	//hash_func new_hash = [](hash_func hasher) {if (hasher != NULL) { return hasher; } else { return std::function<uint32_t(key_type)>;}}; 
         //std::unordered_map<std::string, const void*, hash_func> storage;
+	/*Allows the input of your own hash funct using lambda functions passed into the creation of umap*/
+	
         std::unordered_map<std::string, const void*> storage;
+	/*Using umap to store vals - allows it to be passed a hash func, used buckets to avoid collisions,
+	and allows you to set your own load factor. (Parts 3,4 , and 5)*/
 	std::map<std::string, uint32_t> key_bytes;
+	/*Using an ordered map helps with eviction by giving quick access to largest space consumed*/
         Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
+	/*Initialize with bytes_used = 0 to quickly tell mem usage
+	use properties of umap to set load factor to .5 (dynamic resizing)*/
         :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0) 
         {	
+		
 		storage.max_load_factor(.5);
         }
         ~Impl() = default;
 
   // Add a <key, value> pair to the cache.
   // If key already exists, it will overwrite the old value.
-  // **********WHAT DOES THIS MEAN????????????????????????*********** Both the key and the value are to be deep-copied (not just pointer copied).
   // If maxmem capacity is exceeded, sufficient values will be removed
   // from the cache to accomodate the new value.
         void set(key_type key, val_type val, index_type size)
@@ -50,6 +55,7 @@ struct Cache::Impl {
   // Sets the actual size of the returned value (in bytes) in val_size.
         val_type get(key_type key, index_type& val_size) const
         {
+		/*Count func determines how many items are in the bucket at key - if 0, nothing has hashed there*/
 		if (storage.count(key) > 0)
 		{
                 	val_type val_at = storage.at(key);
@@ -104,34 +110,28 @@ Cache::~Cache()
 {
 }
 
+/*All refs for pImpl below here, actual functionality written above*/
 
-  // Add a <key, value> pair to the cache.
-  // If key already exists, it will overwrite the old value.
-  // Both the key and the value are to be deep-copied (not just pointer copied).
-  // If maxmem capacity is exceeded, sufficient values will be removed
-  // from the cache to accomodate the new value.
 void Cache::set(key_type key, val_type val, index_type size)
 {
 
         pImpl_ ->set(key, val, size);
 }
 
-  // Retrieve a pointer to the value associated with key in the cache,
-  // or NULL if not found.
-  // Sets the actual size of the returned value (in bytes) in val_size.
+
 Cache::val_type Cache::get(key_type key, index_type& val_size) const
 {
         return pImpl_ ->get(key, val_size);
 }
 
-  // Delete an object from the cache, if it's still there
+
 void Cache::del(key_type key)
 {
 
         pImpl_ ->del(key);
 }
 
-  // Compute the total amount of memory used up by all cache values (not keys)
+
 Cache::index_type Cache::space_used() const
 {
         return pImpl_ ->space_used();
