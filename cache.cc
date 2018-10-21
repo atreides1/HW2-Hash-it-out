@@ -12,9 +12,9 @@ struct Cache::Impl {
         hash_func hasher_;
         index_type bytes_used_;
 	
+	/*Allows the input of your own hash funct using lambda functions passed into the creation of umap*/
 	//hash_func new_hash = [](hash_func hasher) {if (hasher != NULL) { return hasher; } else { return std::function<uint32_t(key_type)>;}}; 
         //std::unordered_map<std::string, const void*, hash_func> storage;
-	/*Allows the input of your own hash funct using lambda functions passed into the creation of umap*/
 	
         std::unordered_map<std::string, const void*> storage;
 	/*Using umap to store vals - allows it to be passed a hash func, used buckets to avoid collisions,
@@ -22,7 +22,7 @@ struct Cache::Impl {
 	std::map<std::string, uint32_t> key_bytes;
 	/*Using an ordered map helps with eviction by giving quick access to largest space consumed*/
 	//Using a vector to keep track of the first key value (for FIFO eviction)
-	std::vector<key_type> evict;
+	//std::vector<key_type> evict;
 
 	Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
 	/*Initialize with bytes_used = 0 to quickly tell mem usage
@@ -45,7 +45,7 @@ struct Cache::Impl {
 			//evictor_FIFO();
                 }
           	//Store keys in evictor vector
-		evict.push_back(key);
+		//evict.push_back(key);
 		storage[key] = val;
                 key_bytes[key] = size;
                 bytes_used_ += size;
@@ -104,8 +104,8 @@ struct Cache::Impl {
   //Evict the first key inserted to the cache
 	void evictor_FIFO()
 	{
-	key_type* first_key = *(evict.begin());
-	del(first_key);
+		key_type first_key = key_bytes.begin();
+		del(first_key);
 	
 	}
 };
