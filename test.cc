@@ -2,6 +2,7 @@
 #include <iostream>
 
 uint32_t maxmem = 1024;
+uint32_t small_mem = 5;
 
 int evictor()
 {
@@ -31,7 +32,6 @@ int test_insert()
 }
 
 //test: query key
-
 int test_query()
 {
 	std::cout << "TEST: Query key:" << '\n';
@@ -113,7 +113,7 @@ int test_delete_and_query()
 	return 0;
 }
 
-//
+//test: try deleting a key that wasn't inserted
 int test_delete_uninserted()
 {
 	std::cout << "TEST: Create cache and delete an uninserted key:" << '\n';
@@ -123,6 +123,31 @@ int test_delete_uninserted()
 	c.del(key);
 	insert_line();
 	return 0;
+}
+
+
+//test: overfill cache mem in order to use the FIFO Evictor 
+int test_evict()
+{
+	std::cout << "TEST: FIFO Eviction:" << '\n' << "The cache has a size of 5 bytes" << '\n';
+	Cache c(small_mem, evictor, std::hash<std::string>()); //create cache object
+	std::string key = "a";
+	std::string key1 = "b";
+	std::string key2 = "c";
+	std::string key3 = "d";
+	std::string key4 = "e";
+	char val[] = "z";
+	uint32_t size = 1;
+	c.set(key, val, size);	
+	c.set(key1, val, size);	
+	c.set(key2, val, size);	
+	c.set(key3, val, size);	
+	c.set(key4, val, size);
+	std::cout << "Attempting to retrieve evicted key 'a'..." << '\n';	
+	c.get(key, size);	
+	insert_line();
+	return 0;
+
 }
 int main() 
 {
@@ -134,5 +159,6 @@ int main()
 	test_insert_and_delete();
 	test_delete_and_query();
 	test_delete_uninserted();
+	test_evict();
 	return 0;
 }
