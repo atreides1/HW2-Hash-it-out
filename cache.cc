@@ -1,8 +1,9 @@
 #include "cache.hh"
 #include <unordered_map>
-//#include <vector>
+#include <vector>
 #include <iostream>
 #include <map>
+#include <algorithm>
 
 
 struct Cache::Impl {
@@ -20,7 +21,10 @@ struct Cache::Impl {
 	and allows you to set your own load factor. (Parts 3,4 , and 5)*/
 	std::map<std::string, uint32_t> key_bytes;
 	/*Using an ordered map helps with eviction by giving quick access to largest space consumed*/
-        Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
+	//Using a vector to keep track of the first key value (for FIFO eviction)
+	std::vector<key_type> evict;
+
+	Impl(index_type maxmem, evictor_type evictor, hash_func hasher)
 	/*Initialize with bytes_used = 0 to quickly tell mem usage
 	use properties of umap to set load factor to .5 (dynamic resizing)*/
         :maxmem_(maxmem), evictor_(evictor), hasher_(hasher), bytes_used_(0) 
@@ -38,10 +42,10 @@ struct Cache::Impl {
         {
                 while (bytes_used_ + size >= maxmem_)
                 {
-			evictor_();
+			//evictor_FIFO();
                 }
-          
-
+          	//Store keys in evictor vector
+		evict.push_back(key);
 		storage[key] = val;
                 key_bytes[key] = size;
                 bytes_used_ += size;
@@ -85,6 +89,9 @@ struct Cache::Impl {
                 	storage.erase(key);
                 	key_bytes.erase(key);
 			std::cout << "Key: " << key << " successfully deleted." << '\n';
+			//remove key from evict vector
+			//ptrdiff_t key_index = distance(evict.begin(), find(evict.begin(), evict.end(), key));
+			//evict.erase(key_index);
         	}
 
 	}
@@ -94,6 +101,13 @@ struct Cache::Impl {
         {
                 return bytes_used_;
         }
+  //Evict the first key inserted to the cache
+	void evictor_FIFO()
+	{
+	key_type* first_key = *(evict.begin());
+	del(first_key);
+	
+	}
 };
 
 
