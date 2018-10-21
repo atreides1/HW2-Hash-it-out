@@ -104,7 +104,9 @@ struct Cache::Impl {
   //Evict the first key inserted to the cache
 	void evictor_FIFO()
 	{
-		key_type first_key = key_bytes.begin();
+		
+		key_type first_key = key_bytes.begin()->first;
+		/*-> first gives the key value of the first k/v pair in key_bytes, which is an ordered map so we evict the first value that was inserted*/
 		del(first_key);
 	
 	}
