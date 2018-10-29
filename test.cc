@@ -1,5 +1,6 @@
 #include "cache.hh"
 #include <iostream>
+#include <cassert>
 
 uint32_t maxmem = 1024;
 uint32_t small_mem = 5;
@@ -26,6 +27,7 @@ int test_insert()
 	char val[] = "z";
 	uint32_t size = 1;
 	c.set(key, val, size);	
+	assert(c.space_used() == 1);
 	insert_line();
 	return 0;
 
@@ -40,7 +42,7 @@ int test_query()
 	char val[] = "z";
 	uint32_t size = 1;
 	c.set(key, val, size);	
-	c.get(key, size);
+	assert(&val == c.get(key, size));
 	insert_line();
 	return 0;
 
@@ -54,7 +56,7 @@ int test_query_uninserted()
 	char val[] = "z";
 	uint32_t size = 1;
 	c.set(key, val, size);	
-	c.get("b", size);
+	assert(&val != c.get("b", size));
 	insert_line();
 	return 0;
 }
@@ -73,7 +75,7 @@ int test_insert_and_mod()
         c.get(key, size);
 	c.set(key, val2, size);
 	std::cout << "New value: ";
-	c.get(key, size);
+	assert(&val2 == c.get(key, size));
 	insert_line();
 	return 0;
 
@@ -90,6 +92,7 @@ int test_insert_and_delete()
 	std::cout << "deleting... "; 
 	c.get(key, size);
 	c.del(key);
+	assert(c.space_used() == 0);
 	insert_line();
 	return 0;
 }
@@ -109,6 +112,7 @@ int test_delete_and_query()
 	c.del(key);
 	std::cout << "access deleted val: ";
 	c.get(key, size);
+	assert(c.space_used() == 0);
 	insert_line();
 	return 0;
 }
@@ -121,6 +125,7 @@ int test_delete_uninserted()
 	std::string key = "a";
 	std::cout << "deleting... "; 
 	c.del(key);
+	assert(c.space_used() == 0);
 	insert_line();
 	return 0;
 }
@@ -145,6 +150,7 @@ int test_evict()
 	c.set(key4, val, size);
 	std::cout << "Attempting to retrieve evicted key 'a'..." << '\n';	
 	c.get(key, size);	
+	assert(c.space_used() == 4);
 	insert_line();
 	return 0;
 
