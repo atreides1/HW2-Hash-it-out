@@ -18,6 +18,26 @@ void insert_line()
 }
 
 
+//test: create a cache and check space_used 
+int test_space_used()
+{
+	std::cout << "TEST: Create cache and check space used is updating:" << '\n';
+	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	assert(c.space_used() == 0);
+	std::string key = "a";
+	std::string key1 = "b";
+	char val[] = "z";
+	uint32_t size = 1;
+	c.set(key, val, size);	
+	std::cout << "Space used after inserting: " << c.space_used() << '\n'; 
+	assert(c.space_used() == 1);
+	c.set(key1, val, size);
+	assert(c.space_used() == 2);
+	std::cout << "Space used after inserting: " << c.space_used() << '\n'; 
+	insert_line();
+	return 0;
+
+}
 //test: create a cache and insert key
 int test_insert()
 {
@@ -158,6 +178,7 @@ int test_evict()
 int main() 
 {
 	insert_line();
+	test_space_used();
 	test_insert();
 	test_query();
 	test_query_uninserted();
