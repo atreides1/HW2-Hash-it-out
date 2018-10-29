@@ -187,5 +187,6 @@ int main()
 	test_delete_and_query();
 	test_delete_uninserted();
 	test_evict();
+	std::cout << "All tests passed!" << '\n';
 	return 0;
 }
