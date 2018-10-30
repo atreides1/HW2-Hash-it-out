@@ -21,7 +21,7 @@ and querying for a key that wasn't inserted. The test functions are then called 
 Note: To compile, use "g++-7 -Wall -Wextra -pedantic cache.cc test.cc -o test"
 
 Output from compiled test.cc:
-
+```
 TEST: Create cache and insert key:
 Inserting: Key: a, Value: 0x7ffdc2fa5786
 
@@ -64,4 +64,4 @@ Key: a successfully deleted.
 Inserting: Key: e, Value: 0x7ffdc2fa5786
 Attempting to retrieve evicted key 'a'...
 Key: a not found.
-
+```
