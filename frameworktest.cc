@@ -23,7 +23,7 @@ TEST_CASE("test_space_used", "[Space Used]")
 	uint32_t size = 1;
 	c.set(key, val, size);	
 	c.set(key1, val, size);
-	REQUIRE(c.space_used==2);
+	REQUIRE(c.space_used()==2);
 
 }
 
