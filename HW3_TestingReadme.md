@@ -31,6 +31,8 @@ Laura and   5/9
 
 Josh and Ryan 6/9
 
+|Test|Eval|
+|----|----|
 |test_space_used|PASSED|
 |test_insert|PASSED|
 |query_key|FAILED|
@@ -44,6 +46,8 @@ Josh and Ryan 6/9
 
 Kathy and Rhody 9/9
 
+|Test|Eval|
+|----|----|
 |test_space_used|PASSED|
 |test_insert|PASSED|
 |query_key|PASSED|
