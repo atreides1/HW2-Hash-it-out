@@ -1,6 +1,8 @@
 # HW2-Hash-it-out
 Sierra and Mercy's Cache homework assignment for CSCI 389 (If possible, view on your favorite text editor - Github's README format is messy.)
 
+For Part 3 - Look at HW3_TestingReadme.md for tables and testing info.
+
 Important Files: 
 cache.hh - Unmodified header file used to guide cache implementation
 cache.cc - Creates a cache using an unordered map of key/value pairs, then an ordered map of key/size pairs.
@@ -11,6 +13,7 @@ umap's included properites:
   umap uses buckets when hashing, which allows us to avoid collisions.
   max_load_factor() allows us to set the load factor of our umap, allowing for dynamic resizing.
   count(key) allows us to see the number of items for a given hashed bucket in umap, so we can tell if there's a value (i.e. a specific key) is stored within the umap.
+HW3_TestingReadme.md - Has our tests and tables.
   
 The eviction policy uses FIFO. The key/val pairs are stored in umap, and the key/index_sizes are stored in a regular map. Since the regular map is in 
 order, our evictor_FIFO() finds the first key in the key_bytes map, then deletes the stored values in key_bytes AND storage using that key.
