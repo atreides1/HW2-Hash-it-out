@@ -14,7 +14,9 @@
 
 
 
-Laura and   5/9
+Laura and Lucus 5/9
+
+When testing Laura and Lucus's code, we did not encounter any compiling errors. However, some of our assertions (REQUIRE, since we used Catch2) failed. For one test, Modify_stored_value, the pointer returned was not the same as the pointer that was originally stored. In other tests, the space_used() was not the expected value. For example, the space_used after deleting an item did not decrement, as well as after evictions. Other than that, the rest of the tests passed.
 
 |Test|Eval|
 |----|----|
@@ -31,6 +33,8 @@ Laura and   5/9
 
 Josh and Ryan 6/9
 
+When testing Josh and Ryan's code, we did encounter a few warnings when compiling. Most were initialization issues ("blah_ will be initialized after [...]"). None of the warnings had a major impact on our testing. A few tests failed, however. The pointer value for a value was not the same after querying and modifying the value. Also, the space_used did not update after eviction occurs. Other than that, the rest of the tests passed.
+
 |Test|Eval|
 |----|----|
 |test_space_used|PASSED|
@@ -45,6 +49,8 @@ Josh and Ryan 6/9
 
 
 Kathy and Rhody 9/9
+
+When testing Kathy and Rhody's code, we got a few warnings when compiling. Those were just unused parameters however, nothing serious. All of our tests passed!
 
 |Test|Eval|
 |----|----|
