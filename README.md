@@ -1,3 +1,7 @@
+# HW4 - Let's Network!
+
+We have decided to use Jill and Marika's code for our cache.cc, since our cache.cc had memory leaks. Our cache file is now renamed to old_cache.cc.
+
 # HW2-Hash-it-out
 Sierra and Mercy's Cache homework assignment for CSCI 389 (If possible, view on your favorite text editor - Github's README format is messy.)
 
