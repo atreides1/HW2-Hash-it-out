@@ -14,10 +14,22 @@ int main(int argc, char *argv[])
 	    portnum = std::atoi(argv[2]);
     }
     SimpleApp app;
+/*
+Need 
+set(key,val, size)
+get(key, pointer to val)
+delete(key)
+space_used
+max_em/
 
-    CROW_ROUTE(app, "/key/<string>")
-        .methods("GET"_method, "POST"_method, "DELETE"_method)
-        ([](const request& req, const std::string& id) {
+
+If size null, it's get or del
+If val and size null it's del
+if all parameters, it's set? 
+*/
+    CROW_ROUTE(app, "/cache/<string>/<string>/<string>/<int>")
+        .methods("SET"_method, "GET"_method, "DELETE"_method)
+        ([](const request& req, std::string call, std::string key, std::string val, int size) {
             if (req.method == "GET"_method)
             {
                 if ((req.url_params.get("v") != nullptr) & (req.url_params.get("q") != nullptr))
