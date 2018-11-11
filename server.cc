@@ -1,18 +1,25 @@
-
+#include "cache.hh"
 #include "crow.h"
 #include <string>
 using namespace crow;
+
 int main(int argc, char *argv[])
 {
-    int maxmem;
-    int portnum;
+    uint32_t maxmem;
+    uint32_t portnum;
 
-    if (argc != 0)
+    if (argc != 1)
     {
 
 	    maxmem = std::atoi(argv[1]);
 	    portnum = std::atoi(argv[2]);
     }
+    else
+    {
+	    maxmem = 1024;
+	    portnum = 18080;
+    }
+    //Cache c(maxmem); #throws an undefined reference, fix in a bit
     SimpleApp app;
 /*
 Need 
@@ -26,28 +33,27 @@ If size null, it's get or del
 If val and size null it's del
 if all parameters, it's set? 
 */
-    CROW_ROUTE(app, "/key/<string>/<string>")
-        .methods("GET"_method, "PUT"_method, "DELETE"_method, "HEAD"_method)
-        ([](const request& req, std::string key, std::string val) {
-            if (req.method == "GET"_method)
+    CROW_ROUTE(app, "/key/<string>")
+        .methods("GET"_method,"DELETE"_method, "HEAD"_method)
+        ([](const request& req, std::string key) {
+            
+	 
+	   if (req.method == "GET"_method)
             {
-                if ((req.url_params.get("v") != nullptr) & (req.url_params.get("q") != nullptr))
-                {
-                    // ...
-                }
+                
+	   	//Returns JSON tuple {key: k, value: v} or error if key isn't in cache 	
+                
                 return response(200, "You used GET");
-            }
-            else if (req.method == "PUT"_method)
-            {
-                return response(200, "You used PUT");
             }
             else if (req.method == "DELETE"_method)
             {
-                return response(200, "You used DELETE");
+                //deletes key + val from cache and returns message
+	    	return response(200, "You used DELETE");
             }
             else if (req.method == "HEAD"_method)
             {
-                return response(200, "You used HEAD");
+                //need to return the http version, date, accept, content-type
+		return response(200, "You used HEAD");
             }
             else
             {
@@ -71,6 +77,20 @@ if all parameters, it's set?
                 return response(404);
             }
         });
+
+//PUT /key/k/v Create or replace k,v pair in cache    
+    CROW_ROUTE(app, "/key/<string>/<string>")
+        .methods("PUT"_method)
+        ([](const request& req, std::string key, std::string val) {
+            
+	 
+	   if (req.method == "PUT"_method)
+            {
+	    //...
+	    }
+	   return response(200, "You used PUT");
+	});
+                
 //POST /shutdown: Upon receiving this message, the server stops accepting requests
     CROW_ROUTE(app, "/shutdown")
         .methods("POST"_method)
@@ -91,13 +111,4 @@ if all parameters, it's set?
     app.port(portnum).run();
 }
     
-    /*
-    crow::SimpleApp app;
-
-    CROW_ROUTE(app, "/")([](){
-        return "Hello world";
-    });
-
-    app.port(18080).multithreaded().run();
-*/
     
