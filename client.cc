@@ -22,8 +22,17 @@ Disk 66.3 GB
 #include <unordered_map>
 #include <tuple>
 
+#include <pstream.h>
+#include <string>
+/*
 
-struct Cache::Impl {
+int main()
+{
+} 
+ */
+
+struct Cache::Impl 
+{
 	index_type maxmem_;
 	evictor_type evictor_;
 	hash_func hasher_;
@@ -31,81 +40,51 @@ struct Cache::Impl {
 	index_type newest_;
 	std::unordered_map<std::string, std::tuple<val_type, index_type, index_type>> unorderedmap_;
 	std::string servername;
-	int portnum;
+	std::string portnum;
 
 public:
 	Impl(index_type maxmem, evictor_type evictor, hash_func hasher) 
-	: maxmem_(maxmem), evictor_(evictor), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(){
+	: maxmem_(maxmem), evictor_(evictor), hasher_(hasher), memused_(0), newest_(0), unorderedmap_()
+	{
 
 	}
-	~Impl(){
+	~Impl()
+	{
 		auto it = unorderedmap_.begin();
-		while (it != unorderedmap_.end()) {
+		while (it != unorderedmap_.end()) 
+		{
 			delete[] static_cast<const char*>(std::get<0>(it->second));
 			it = unorderedmap_.erase(it);
 		}
 	}
 
-	void set(key_type key, val_type val, index_type size){
-		// First check if key already has a value in the cache. 
-		// Delete old tuple if necessary
-		index_type tmp = 1;
-		if (get(key, tmp) != nullptr || tmp != 0) {
-			del(key);
-		}
-		// Set the new value
-		val_type copy = new char[size];
-		std::memcpy((void*)copy, val, size);
-		std::tuple<val_type, index_type, index_type> entry = std::make_tuple((void*)copy, size, newest_);
-		while ((memused_ + size) > maxmem_) {
-			evictor();
-		}
-		this->unorderedmap_[key] = entry;
-		memused_+= size;
-		newest_ += 1;
+	void set(key_type key, val_type val, index_type size)
+	{
+		//QUESTION: HOW DO I MAKE THESE BE STRINGS? DO I HAVE TO SPECIFY TYPE?
+		std::string command = "curl -X PUT http://"+servername+":"+portnum+"/key/"+key+"/"+val;
+		readwrite(command);
 		return;
 	}
 
-	val_type get(key_type key, index_type& val_size) const {
-		std::tuple<val_type, index_type, index_type> entry;
-		try{
-			entry = unorderedmap_.at(key);
-		} catch(const std::out_of_range& oor) {
-			val_size = 0; 	// set val_size to 0 if we don't find the value
-			return NULL;
-		}
-		
-		val_size = std::get<1>(entry);
+	val_type get(key_type key, index_type& val_size) const 
+	{
 		return std::get<0>(entry);
 	}
 	
 	// This deletes a (key, tuple) entry from the map
-	void del(key_type key){
-		index_type val_size = 0;
-		auto val = static_cast<const char*>(get(key, val_size));
-		unorderedmap_.erase(key);
-		delete[] val;
-		memused_ -= val_size;
+	void del(key_type key)
+	{
 		return;
 	}
 
-	index_type space_used() const{
+	index_type space_used() const
+	{
 		return memused_;
 	}
 
 
-	void evictor() {
-		std::string oldest_key;
-		index_type oldest_age = newest_;
-		for( auto& pair: unorderedmap_){
-			std::tuple<val_type, index_type, index_type> entry = unorderedmap_.at(pair.first); // entry = (value, age) tuple
-			index_type age =  std::get<2>(entry); // get the age
-			if (age <= oldest_age){
-				oldest_age = age;
-				oldest_key = pair.first;
-			}
-		}
-		del(oldest_key);
+	void evictor()
+	{
 	
 	}
 
@@ -148,3 +127,19 @@ void Cache::del(key_type key){
 Cache::index_type Cache::space_used() const {
 	return pImpl_->space_used();
 }
+
+void readwrite (std::string command)
+{
+
+  // run a process and create a streambuf that reads its stdout and stderr
+  redi::ipstream proc(command, redi::pstreams::pstdout | redi::pstreams::pstderr);
+  std::string line;
+  // read child's stdout
+  while (std::getline(proc.out(), line))
+    std::cout << "stdout: " << line << '\n';
+  // read child's stderr
+  while (std::getline(proc.err(), line))
+    std::cout << "stderr: " << line << '\n';
+}
+
+
