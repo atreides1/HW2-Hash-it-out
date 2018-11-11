@@ -30,17 +30,17 @@ if all parameters, it's set?
     CROW_ROUTE(app, "/cache/<string>/<string>/<string>/<int>")
         .methods("SET"_method, "GET"_method, "DELETE"_method)
         ([](const request& req, std::string call, std::string key, std::string val, int size) {
-            if (req.method == "GET"_method)
+            if (req.method == "SET"_method)
             {
                 if ((req.url_params.get("v") != nullptr) & (req.url_params.get("q") != nullptr))
                 {
                     // ...
                 }
-                return response(200, "You used GET");
+                return response(200, "You used SET");
             }
-            else if (req.method == "POST"_method)
+            else if (req.method == "GET"_method)
             {
-                return response(200, "You used POST");
+                return response(200, "You used GET");
             }
             else if (req.method == "DELETE"_method)
             {
