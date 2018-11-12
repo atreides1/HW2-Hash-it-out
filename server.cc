@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	    maxmem = 1024;
 	    portnum = 18080;
     }
-    //Cache c(maxmem); //throws an undefined reference, fix in a bit
+    Cache c(maxmem); //throws an undefined reference, fix in a bit
     SimpleApp app;
 /*
 Need 
@@ -42,8 +42,8 @@ if all parameters, it's set?
             {
                 
 	   	//Returns JSON tuple {key: k, value: v} or error if key isn't in cache 	
-                //uint32_t size = val.size();
-		//c.get(k, size);
+                uint32_t size = val.size();
+		c.get(k, size);
                 return response(200, "You used GET");
             }
             else if (req.method == "DELETE"_method)
@@ -100,11 +100,8 @@ if all parameters, it's set?
         ([](const request& req) {
             if (req.method == "POST"_method)
             {
-                if ((req.url_params.get("v") != nullptr) & (req.url_params.get("q") != nullptr))
-                {
-                    // ...
-                }
-                return response(200, "You used POST");
+                
+	    	return response(200, "You used POST");
             }
             else
             {

@@ -25,14 +25,13 @@ Disk 66.3 GB
 
 struct Cache::Impl {
 	index_type maxmem_;
-	evictor_type evictor_;
 	hash_func hasher_;
 	index_type memused_;
 	index_type newest_;
 	std::unordered_map<std::string, std::tuple<val_type, index_type, index_type>> unorderedmap_;
 public:
-	Impl(index_type maxmem, evictor_type evictor, hash_func hasher) 
-	: maxmem_(maxmem), evictor_(evictor), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(){
+	Impl(index_type maxmem, hash_func hasher) 
+	: maxmem_(maxmem), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(){
 
 	}
 	~Impl(){
@@ -43,7 +42,7 @@ public:
 		}
 	}
 
-	void set(key_type key, val_type val, index_type size){
+	int set(key_type key, val_type val, index_type size){
 		// First check if key already has a value in the cache. 
 		// Delete old tuple if necessary
 		index_type tmp = 1;
@@ -60,7 +59,7 @@ public:
 		this->unorderedmap_[key] = entry;
 		memused_+= size;
 		newest_ += 1;
-		return;
+		return 0;
 	}
 
 	val_type get(key_type key, index_type& val_size) const {
@@ -77,13 +76,13 @@ public:
 	}
 	
 	// This deletes a (key, tuple) entry from the map
-	void del(key_type key){
+	int del(key_type key){
 		index_type val_size = 0;
 		auto val = static_cast<const char*>(get(key, val_size));
 		unorderedmap_.erase(key);
 		delete[] val;
 		memused_ -= val_size;
-		return;
+		return 0;
 	}
 
 	index_type space_used() const{
@@ -109,9 +108,8 @@ public:
 };
 
 Cache::Cache(index_type maxmem,
-        evictor_type evictor,
         hash_func hasher) 
-	: pImpl_(new Impl(maxmem,evictor,hasher))
+	: pImpl_(new Impl(maxmem,hasher))
  {
 
 }
@@ -125,7 +123,7 @@ Cache::~Cache(){
 // Both the key and the value are to be deep-copied (not just pointer copied).
 // If maxmem capacity is exceeded, sufficient values will be removed
 // from the cache to accomodate the new value.
-void Cache::set(key_type key, val_type val, index_type size){
+int Cache::set(key_type key, val_type val, index_type size){
 	return pImpl_->set(key,val,size);
 }
 
@@ -137,8 +135,8 @@ Cache::val_type Cache::get(key_type key, index_type& val_size) const {
 }
 
 // Delete an object from the cache, if it's still there
-void Cache::del(key_type key){
-	pImpl_->del(key);
+int Cache::del(key_type key){
+	return pImpl_->del(key);
 }
 
 // Compute the total amount of memory used up by all cache values (not keys)
