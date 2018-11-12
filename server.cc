@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	    maxmem = 1024;
 	    portnum = 18080;
     }
-    //Cache c(maxmem); #throws an undefined reference, fix in a bit
+    //Cache c(maxmem); //throws an undefined reference, fix in a bit
     SimpleApp app;
 /*
 Need 
@@ -35,19 +35,21 @@ if all parameters, it's set?
 */
     CROW_ROUTE(app, "/key/<string>")
         .methods("GET"_method,"DELETE"_method, "HEAD"_method)
-        ([](const request& req, std::string key) {
+        ([](const request& req, std::string k) {
             
 	 
 	   if (req.method == "GET"_method)
             {
                 
 	   	//Returns JSON tuple {key: k, value: v} or error if key isn't in cache 	
-                
+                //uint32_t size = val.size();
+		//c.get(k, size);
                 return response(200, "You used GET");
             }
             else if (req.method == "DELETE"_method)
             {
                 //deletes key + val from cache and returns message
+	    	//c.delete(k);
 	    	return response(200, "You used DELETE");
             }
             else if (req.method == "HEAD"_method)
@@ -66,10 +68,10 @@ if all parameters, it's set?
         ([](const request& req) {
             if (req.method == "GET"_method)
             {
-                if ((req.url_params.get("v") != nullptr) & (req.url_params.get("q") != nullptr))
-                {
-                    // ...
-                }
+                //if ((req.url_params.get("v") != nullptr) & (req.url_params.get("q") != nullptr))
+                //{
+                //c.space_used();
+                //}
                 return response(200, "You used GET");
             }
             else
@@ -81,12 +83,13 @@ if all parameters, it's set?
 //PUT /key/k/v Create or replace k,v pair in cache    
     CROW_ROUTE(app, "/key/<string>/<string>")
         .methods("PUT"_method)
-        ([](const request& req, std::string key, std::string val) {
+        ([](const request& req, std::string k, std::string val) {
             
 	 
 	   if (req.method == "PUT"_method)
             {
-	    //...
+	    //uint32_t size = val.size();
+	    //c.set(k, val, size);
 	    }
 	   return response(200, "You used PUT");
 	});
