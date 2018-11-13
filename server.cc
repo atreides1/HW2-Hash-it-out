@@ -20,19 +20,15 @@ int main(int argc, char *argv[])
 	    portnum = 18080;
     }
     SimpleApp app;
-    Cache c(maxmem); //throws an undefined reference, fix in a bit
+    Cache c(maxmem);
 
 /*
-Need
-**GET /key/k: Returns a JSON tuple with { key: k, value: value: v }
 
+**GET /key/k: Returns a JSON tuple with { key: k, value: value: v }
 **PUT /key/k/v: create or replace a k,v   //IS THIS THE SAME?
 **DELETE /key/k
 **HEAD /key/k: Return just a header, regardless of the resource (key) requested
 
-If size null, it's get or del
-If val and size null it's del
-if all parameters, it's set?
 */
 
     CROW_ROUTE(app, "/key/<string>")
@@ -55,7 +51,6 @@ if all parameters, it's set?
                   x["value"] = val;
                   return response(200, x);
                 }
-                //return response(200, "You used GET");
             }
             else if (req.method == "DELETE"_method)
             {
@@ -70,7 +65,7 @@ if all parameters, it's set?
                 header["Accept"] = "application/json";
                 header["Content-Type"] = "application/json";
                 header["Date"] = "Tue, 13 Nov 2018 08:12:31 GMT"; //Need to fix this
-                header["HTTP Version"] = "HTTP/2?";
+                header["HTTP Version"] = "HTTP/2";
 		            return response(200, header);
             }
             else
@@ -96,7 +91,7 @@ if all parameters, it's set?
                 return response(404);
             }
         });
-/*
+
 //PUT /key/k/v Create or replace k,v pair in cache
     CROW_ROUTE(app, "/key/<string>/<string>")
         .methods("PUT"_method)
@@ -107,28 +102,27 @@ if all parameters, it's set?
       {
 
 	      uint32_t size = val.size();
-        //char val_pointer[] = new char[val.length() + 1];
-        //strcpy(val_pointer, val.c_str());
-	      //c.set(k, val_pointer, size);
-        //delete[] val_pointer;
+        const void * val_pointer = val.c_str();
+	      c.set(k, val_pointer, size);
 	    }
-	   return response(200, "You used PUT");
+	   return response(200, "Successfully inserted/updated key and value.");
 	});
 
 //POST /shutdown: Upon receiving this message, the server stops accepting requests
     CROW_ROUTE(app, "/shutdown")
         .methods("POST"_method)
         ([&](const request& req) {
-            if (req.method == "POST"_method)
-            {
+          if (req.method == "POST"_method)
+          {
+            //delete c;
+            //break;
+            return response(200, "You used POST");
 
-	    	return response(200, "You used POST");
-            }
-            else
-            {
-                return response(404);
-            }
+          } else {
+
+            return response(404);
+          }
         });
-*/
+
     app.port(portnum).run();
 }
