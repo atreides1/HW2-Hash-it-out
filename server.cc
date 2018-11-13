@@ -114,8 +114,9 @@ int main(int argc, char *argv[])
         ([&](const request& req) {
           if (req.method == "POST"_method)
           {
+            //need to clear memory from cache
+            app.stop();
             return response(200, "Shutting down...");
-            delete &app;
 
           } else {
 
