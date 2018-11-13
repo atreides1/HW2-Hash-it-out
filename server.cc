@@ -34,7 +34,7 @@ If size null, it's get or del
 If val and size null it's del
 if all parameters, it's set?
 */
-/*
+
     CROW_ROUTE(app, "/key/<string>")
         .methods("GET"_method,"DELETE"_method, "HEAD"_method)
         ([&](const request& req, std::string k) {
@@ -43,28 +43,42 @@ if all parameters, it's set?
 	         if (req.method == "GET"_method)
             {
 
-	   	//Returns JSON tuple {key: k, value: v} or error if key isn't in cache
+	   	         //Returns JSON tuple {key: k, value: v} or error if key isn't in cache
                 uint32_t size = 1;
-		            c.get(k, size);
-                return response(200, "You used GET");
+		            if (c.get(k, size) == NULL)
+                {
+                  return response(500, "Key not in cache.");
+                } else {
+                  auto val = c.get(k, size);
+                  json::wvalue x;
+                  x["key"] = k;
+                  x["value"] = val;
+                  return response(200, x);
+                }
+                //return response(200, "You used GET");
             }
             else if (req.method == "DELETE"_method)
             {
                 //deletes key + val from cache and returns message
 	    	        c.del(k);
-	    	        return response(200, "You used DELETE");
+	    	        return response(200, "Successfully deleted key.");
             }
             else if (req.method == "HEAD"_method)
             {
                 //need to return the http version, date, accept, content-type
-		             return response(200, "You used HEAD");
+                json::wvalue header;
+                header["Accept"] = "application/json";
+                header["Content-Type"] = "application/json";
+                header["Date"] = "Tue, 13 Nov 2018 08:12:31 GMT"; //Need to fix this
+                header["HTTP Version"] = "HTTP/2?";
+		            return response(200, header);
             }
             else
             {
                 return response(404);
             }
         });
-*/
+
 //GET /memsize: Returns a JSON tuple with { memused: mem }
     CROW_ROUTE(app, "/memsize")
         .methods("GET"_method)
