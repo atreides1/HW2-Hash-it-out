@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
                 } else {
                   auto val = c.get(k, size);
                   json::wvalue x;
-                  x["key"] = k;
                   x["value"] = val;
+                  x["key"] = k;
                   return response(200, x);
                 }
             }
@@ -114,9 +114,8 @@ int main(int argc, char *argv[])
         ([&](const request& req) {
           if (req.method == "POST"_method)
           {
-            //delete c;
-            //break;
-            return response(200, "You used POST");
+            return response(200, "Shutting down...");
+            delete &app;
 
           } else {
 
