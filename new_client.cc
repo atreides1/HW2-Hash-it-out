@@ -6,8 +6,12 @@
 #include <stdio.h>
 #include <curl/curl.h>
 
-uint32_t server_name;
-uint32_t port_num = 18080;
+const char* url_get_k = "http://0.0.0.0:18080/key/";
+const char* url_put_k_v = "http://0.0.0.0:18080/key/";
+const char* url_delete_k = "http://0.0.0.0:18080/key/";
+const char* url_head_k = "http://0.0.0.0:18080/key/";
+const char* url_get_memsize = "http://0.0.0.0:18080/memsize";
+const char* url_post = "http://0.0.0.0:18080/shutdown";
 
 struct Cache::Impl 
 {
@@ -50,14 +54,14 @@ public:
                 }
 
                 val_size = std::get<1>(entry);
+
 */              
- 		if(curl_) 
+		std::string get_key = url_get_k + key;
+		if(curl_) 
   		{
-			//does server name = https://localhost: ?
-			//string url = server_name + str(port_num) ??
-    			curl_easy_setopt(curl_, CURLOPT_URL, "https://example.com");
+    			curl_easy_setopt(curl_, CURLOPT_URL, url_get_k);
     /* example.com is redirected, so we tell libcurl to follow redirection */ 
-   			curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
+   			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
  
     /* Perform the request, res will get the return code */ 
    			auto res = curl_easy_perform(curl_);

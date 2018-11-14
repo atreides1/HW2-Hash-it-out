@@ -8,15 +8,11 @@ uint32_t maxmem = 1024;
 uint32_t small_mem = 5;
 
 
-int evictor()
-{
-	return 0;	
-}
 
 TEST_CASE("test_space_used", "[Space Used]")
 {
 		
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	std::string key1 = "b";
 	char val[] = "z";
@@ -32,7 +28,7 @@ TEST_CASE("test_space_used", "[Space Used]")
 TEST_CASE("test_insert", "[Space Used]")
 {
 //	std::cout << "TEST: Create cache and insert key:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	char val[] = "z";
 	uint32_t size = 1;
@@ -44,7 +40,7 @@ TEST_CASE("test_insert", "[Space Used]")
 TEST_CASE("query key", "[Query]")
 {
 //	std::cout << "TEST: Query key:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	char val[] = "z";
 	uint32_t size = 1;
@@ -56,7 +52,7 @@ TEST_CASE("query key", "[Query]")
 TEST_CASE("query_uninserted_key", "[Query]")
 {
 //	std::cout << "TEST: Query key that wasn't inserted:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	char val[] = "z";
 	uint32_t size = 1;
@@ -68,7 +64,7 @@ TEST_CASE("query_uninserted_key", "[Query]")
 TEST_CASE("Modify_stored_value", "[Set]")
 {
 //	std::cout << "TEST: Insert key and modify value:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	char val[] = "z";
 	char val2[] = "y";
@@ -83,7 +79,7 @@ TEST_CASE("Modify_stored_value", "[Set]")
 TEST_CASE("Delete Key", "[Delete]")
 {
 //	std::cout << "TEST: Create cache and delete key:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	char val[] = "z";
 	uint32_t size = 1;
@@ -97,7 +93,7 @@ TEST_CASE("Delete Key", "[Delete]")
 TEST_CASE("Query  doesn't mod memused", "[Space Used]")
 {
 //	std::cout << "TEST: Create cache and check for deleted value:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	char val[] = "z";
 	uint32_t size = 1;
@@ -112,7 +108,7 @@ TEST_CASE("Query  doesn't mod memused", "[Space Used]")
 TEST_CASE("Empty del doesn't mod memused", "[Space Used]")
 {
 //	std::cout << "TEST: Create cache and delete an uninserted key:" << '\n';
-	Cache c(maxmem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(maxmem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	c.del(key);
 	REQUIRE(c.space_used() == 0);
@@ -123,7 +119,7 @@ TEST_CASE("Empty del doesn't mod memused", "[Space Used]")
 TEST_CASE("test_evict", "[Evict]")
 {
 //	std::cout << "TEST: FIFO Eviction:" << '\n' << "The cache has a size of 5 bytes" << '\n';
-	Cache c(small_mem, evictor, std::hash<std::string>()); //create cache object
+	Cache c(small_mem, std::hash<std::string>()); //create cache object
 	std::string key = "a";
 	std::string key1 = "b";
 	std::string key2 = "c";
