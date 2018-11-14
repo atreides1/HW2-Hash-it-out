@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <curl/curl.h>
 
+uint32_t server_name;
+uint32_t port_num = 18080;
 
 struct Cache::Impl 
 {
@@ -50,7 +52,9 @@ public:
                 val_size = std::get<1>(entry);
 */              
  		if(curl_) 
-  		{	
+  		{
+			//does server name = https://localhost: ?
+			//string url = server_name + str(port_num) ??
     			curl_easy_setopt(curl_, CURLOPT_URL, "https://example.com");
     /* example.com is redirected, so we tell libcurl to follow redirection */ 
    			curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
