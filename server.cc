@@ -1,6 +1,8 @@
 #include "cache.hh"
 #include "crow.h"
 #include <string>
+#include <vector>
+#include <ctime>
 using namespace crow;
 
 int main(int argc, char *argv[])
@@ -20,6 +22,7 @@ int main(int argc, char *argv[])
 	    portnum = 18080;
     }
     SimpleApp app;
+    std::vector<std::string> keys;
     Cache c(maxmem);
 
 /*
@@ -61,10 +64,12 @@ int main(int argc, char *argv[])
             else if (req.method == "HEAD"_method)
             {
                 //need to return the http version, date, accept, content-type
+                std::time_t result = std::time(nullptr);
+                std::string current_date = std::asctime(std::localtime(&result));
                 json::wvalue header;
                 header["Accept"] = "application/json";
                 header["Content-Type"] = "application/json";
-                header["Date"] = "Tue, 13 Nov 2018 08:12:31 GMT"; //Need to fix this
+                header["Date"] = current_date; //"Tue, 13 Nov 2018 08:12:31 GMT";
                 header["HTTP Version"] = "HTTP/2";
 		            return response(200, header);
             }
@@ -104,6 +109,7 @@ int main(int argc, char *argv[])
 	      uint32_t size = val.size();
         const void * val_pointer = val.c_str();
 	      c.set(k, val_pointer, size);
+        keys.push_back(k);
 	    }
 	   return response(200, "Successfully inserted/updated key and value.");
 	});
@@ -114,8 +120,13 @@ int main(int argc, char *argv[])
         ([&](const request& req) {
           if (req.method == "POST"_method)
           {
+            //clear memory from cache
+            for (auto i = keys.begin(); i != keys.end(); i++)
+            {
+              c.del(*i);
+            }
+            app.stop();
             return response(200, "Shutting down...");
-            delete &app;
 
           } else {
 
