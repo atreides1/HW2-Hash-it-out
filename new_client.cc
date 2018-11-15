@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <curl/curl.h>
 
+#include <cstring>
+
 const char* url_get_k = "http://0.0.0.0:18080/key/";
 const char* url_put_k_v = "http://0.0.0.0:18080/key/";
 const char* url_delete_k = "http://0.0.0.0:18080/key/";
@@ -57,9 +59,12 @@ public:
 
 */              
 		std::string get_key = url_get_k + key;
+		char * cstr = new char [get_key.length()+1];
+		std::strcpy (cstr, get_key.c_str());
+
 		if(curl_) 
   		{
-    			curl_easy_setopt(curl_, CURLOPT_URL, url_get_k);
+    			curl_easy_setopt(curl_, CURLOPT_URL, cstr);
     /* example.com is redirected, so we tell libcurl to follow redirection */ 
    			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
  
