@@ -10,7 +10,7 @@
 
 const char* url_get_k = "http://0.0.0.0:18080/key/";
 const char* url_put_k_v = "http://0.0.0.0:18080/key/";
-const char* url_delete_k = "http://0.0.0.0:18080/key/";
+const char* url_del_k = "http://0.0.0.0:18080/key/";
 const char* url_head_k = "http://0.0.0.0:18080/key/";
 const char* url_get_memsize = "http://0.0.0.0:18080/memsize";
 const char* url_post = "http://0.0.0.0:18080/shutdown";
@@ -82,6 +82,21 @@ public:
 	// This deletes a (key, tuple) entry from the map
 	int del(key_type key)
 	{
+		std::string del_key = url_del_k + key;
+		char * delstr = new char [del_key.length()+1];
+		std::strcpy (delstr, del_key.c_str());
+		
+		curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_easy_setopt(curl_, CURLOPT_URL, delstr);
+		curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "{\"key\": \"value\"}");
+		struct curl_slist *headers = NULL;
+
+		headers = curl_slist_append(headers, "content-type: application/json");
+		curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
+		CURLcode ret = curl_easy_perform(curl_);
+		// do something...
+		curl_slist_free_all(headers);
+		curl_easy_cleanup(curl_);
 		return 0;
 	}
 
