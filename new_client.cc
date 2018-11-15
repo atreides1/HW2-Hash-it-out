@@ -45,7 +45,11 @@ public:
 		if(curl_)
 	       	{
 
-			std::string set_kv = url_put_k_v + key + "/" + val;
+
+			//convert val (void *) to string
+			char *char_val = (char*) (val);
+			std::string str_val(char_val);
+			std::string set_kv = url_put_k_v + key + "/" + str_val;
 			char * setstr = new char [set_kv.length()+1];
 			std::strcpy (setstr, set_kv.c_str());
  
