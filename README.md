@@ -1,9 +1,10 @@
 # HW4 - Let's Network!
 
-We have decided to use Jill and Marika's code for our cache.cc, since our cache.cc had memory leaks. Our previous cache file is renamed old_cache.cc. Our server is located at server.cc; we are using the Crow library: https://github.com/ipkn/crow To use, git clone the crow directory outside of our project. (At the same parent directory as our project). Then, copy cache.hh to crow/include. Then you can compile our server with the line: ```g++-7 -I../crow/include -Wall -Wextra cache.cc server.cc -o server -pthread -lboost_system```. To run the server, use ./server 
+We have decided to use Jill and Marika's code for our cache.cc, since our cache.cc had memory leaks. Our previous cache file is renamed old_cache.cc. Our server is located at server.cc; we are using the Crow library: https://github.com/ipkn/crow To use, git clone the crow directory outside of our project. (At the same parent directory as our project). Then, copy cache.hh to crow/include. Then you can compile our server with the line: ```g++-7 -I../crow/include -Wall -Wextra cache.cc server.cc -o server -pthread -lboost_system```. To run the server, use ```./server``` 
 
 Our client is called client.cc. We are using the libcurl library. To use, install the libcurl library: ```sudo apt-get install libcurl4-gnutls-dev```.
-To compile the client, enter ```g++ -Wall -Wextra -pedantic client.cc frameworktest.cc -o client -lcurl```
+To compile the client, enter ```g++ -Wall -Wextra -pedantic client.cc frameworktest.cc -o client -lcurl```.
+Run with ```./client``` on a different terminal window. Currently set to work with server address 0.0.0.0:18080
 
 # HW2-Hash-it-out
 Sierra and Mercy's Cache homework assignment for CSCI 389 (If possible, view on your favorite text editor - Github's README format is messy.)
