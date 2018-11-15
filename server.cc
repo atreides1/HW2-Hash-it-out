@@ -47,10 +47,18 @@ int main(int argc, char *argv[])
 		            if (c.get(k, size) == NULL)
                 {
                   return response(500, "Key not in cache.");
-                } else {
+                } else 
+		{
                   auto val = c.get(k, size);
-                  json::wvalue x;
-                  x["value"] = val;
+                  char *char_val = (char *) (val);
+		 //while(*char_val != "\0")
+		 //{
+		 //	std::cout << char_val;
+		 //}
+		  std::string str_val(char_val);	
+		  //str_val.pop_back();
+		  json::wvalue x;
+                  x["value"] = str_val;
                   x["key"] = k;
                   return response(200, x);
                 }
