@@ -22,13 +22,13 @@ struct Cache::Impl
 	index_type memused_;
 	index_type newest_;
 	std::unordered_map<std::string, std::tuple<val_type, index_type, index_type>> unorderedmap_;
-
 	CURL* curl_;
 public:
 	Impl(index_type maxmem, hash_func hasher) 
-	: maxmem_(maxmem), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(),
+	: maxmem_(maxmem), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(), 
 	curl_(curl_easy_init())
 	{
+
 	}
 	~Impl()
 	{
@@ -42,6 +42,29 @@ public:
 
 	int set(key_type key, val_type val, index_type size)
 	{
+		if(curl_)
+	       	{
+
+			std::string set_kv = url_put_k_v + key + "/" + val;
+			char * setstr = new char [set_kv.length()+1];
+			std::strcpy (setstr, set_kv.c_str());
+ 
+		    	/* HTTP PUT please */ 
+    			curl_easy_setopt(curl_, CURLOPT_PUT, 1L);
+			/* specify target URL, and note that this URL should include a file
+       			name, not only a directory */ 
+			curl_easy_setopt(curl_, CURLOPT_URL, set_kv);
+ 
+   			auto res = curl_easy_perform(curl_);
+ 
+    			res = curl_easy_perform(curl_);
+   			 /* Check for errors */ 
+   			if(res != CURLE_OK)
+     				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              			curl_easy_strerror(res));
+			curl_easy_cleanup(curl_);
+		}
+		curl_global_cleanup();		
 		return 0;
 	}
 
@@ -85,18 +108,21 @@ public:
 		std::string del_key = url_del_k + key;
 		char * delstr = new char [del_key.length()+1];
 		std::strcpy (delstr, del_key.c_str());
-		
-		curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "DELETE");
-		curl_easy_setopt(curl_, CURLOPT_URL, delstr);
-		curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "{\"key\": \"value\"}");
-		struct curl_slist *headers = NULL;
+		if(curl_)
+		{
 
-		headers = curl_slist_append(headers, "content-type: application/json");
-		curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
-		CURLcode ret = curl_easy_perform(curl_);
-		// do something...
-		curl_slist_free_all(headers);
-		curl_easy_cleanup(curl_);
+			curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "DELETE");
+			curl_easy_setopt(curl_, CURLOPT_URL, delstr);
+			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "{\"key\": \"value\"}");
+			struct curl_slist *headers = NULL;
+
+			headers = curl_slist_append(headers, "content-type: application/json");
+			curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
+			CURLcode ret = curl_easy_perform(curl_);
+			// do something...
+			curl_slist_free_all(headers);
+			curl_easy_cleanup(curl_);
+		}
 		return 0;
 	}
 
@@ -108,7 +134,7 @@ public:
     			curl_easy_setopt(curl_, CURLOPT_URL, url_get_memsize);
    			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
     			/* Perform the request, res will get the return code */ 
-   			auto res = curl_easy_perform(curl_);
+			auto res = curl_easy_perform(curl_);
   			/* Check for errors */ 
     			if(res != CURLE_OK)
 				fprintf(stderr, "curl_easy_perform() failed: %s\n",
@@ -116,6 +142,7 @@ public:
  
 			    /* always cleanup */ 
     			curl_easy_cleanup(curl_);
+
   		}
 		return memused_;
 	}
