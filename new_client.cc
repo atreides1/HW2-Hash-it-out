@@ -11,7 +11,7 @@
 const char* url_get_k = "http://0.0.0.0:18080/key/";
 const char* url_put_k_v = "http://0.0.0.0:18080/key/";
 const char* url_del_k = "http://0.0.0.0:18080/key/";
-const char* url_head_k = "http://0.0.0.0:18080/key/";
+const char* url_head_k = "http://0.0.0.0:18080/key/k";
 const char* url_get_memsize = "http://0.0.0.0:18080/memsize";
 const char* url_post = "http://0.0.0.0:18080/shutdown";
 
@@ -39,17 +39,18 @@ public:
 			it = unorderedmap_.erase(it);
 		}
 	}
-
-	int set(key_type key, val_type val, index_type size)
+	
+	int set(key_type key, val_type val, index_type size) 
+		//size not used, throws warning 
 	{
-		
 		//convert val (void *) to string
+	
+	/*	
 		char *char_val = (char*) (val);
 		std::string str_val(char_val);
 		std::string set_kv = url_put_k_v + key + "/" + str_val;
 		char * setstr = new char [set_kv.length()+1];
 		std::strcpy (setstr, set_kv.c_str());
-		
 		if(curl_)
 	       	{
 			//auto headers = curl_slist_append(headers, client_id_header);
@@ -57,34 +58,32 @@ public:
 
     			//curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers); 
     			curl_easy_setopt(curl_, CURLOPT_URL, setstr);  
-    			curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "PUT"); /* !!! */
+    			curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "PUT"); 
 
-    			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, json_struct); /* data goes here */
+    			//curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, json_struct); 
 	
     			auto res = curl_easy_perform(curl_);
 
-    			//curl_slist_free_all(headers);
+    			
+			if (res != CURLE_OK)
+				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+				curl_easy_strerror(res));	
+			//curl_slist_free_all(headers);
     			curl_easy_cleanup(curl_);
 
  
 		}
-		curl_global_cleanup();
+		curl_global_cleanup(); 
+	*/	
 		return 0;
 	}
 
+
 	val_type get(key_type key, index_type& val_size) const 
 	{
-/*                std::tuple<val_type, index_type, index_type> entry;
-                try{
-                        entry = unorderedmap_.at(key);
-                } catch(const std::out_of_range& oor) {
-                        val_size = 0;   // set val_size to 0 if we don't find the value
-                        return NULL;
-                }
-
-                val_size = std::get<1>(entry);
-
-*/              
+		//val_size not used, throws warning
+		
+		//converting params to a char * since that what lib-curl takes as a url
 		std::string get_key = url_get_k + key;
 		char * cstr = new char [get_key.length()+1];
 		std::strcpy (cstr, get_key.c_str());
@@ -123,7 +122,9 @@ public:
 			headers = curl_slist_append(headers, "content-type: application/json");
 			curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
 			CURLcode ret = curl_easy_perform(curl_);
-			// do something...
+			if (ret != CURLE_OK)
+				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+				curl_easy_strerror(ret));	
 			curl_slist_free_all(headers);
 			curl_easy_cleanup(curl_);
 		}
@@ -152,9 +153,38 @@ public:
 	}
 
 
-	void evictor() 
+	void shutdown()
 	{
 	
+		if(curl_)
+		{
+			curl_easy_setopt(curl_, CURLOPT_URL, url_post);
+    			/* Now specify the POST data */
+    			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "{\"key\": \"value\"}");
+
+    			/* Perform the request, res will get the return code */
+    			auto res = curl_easy_perform(curl_);
+    			/* Check for errors */
+    			if(res != CURLE_OK)
+      				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              				curl_easy_strerror(res));
+
+    			/* always cleanup */
+    			curl_easy_cleanup(curl_);
+		}
+	}
+
+	void head()
+	{
+	if(curl_) {
+  		curl_easy_setopt(curl_, CURLOPT_URL, url_head_k);
+ 
+  		/* get us the resource without a body! */
+  		curl_easy_setopt(curl_, CURLOPT_NOBODY, 1L);
+ 
+  		/* Perform the request */
+  		curl_easy_perform(curl_);
+		}		
 	}
 };
 
