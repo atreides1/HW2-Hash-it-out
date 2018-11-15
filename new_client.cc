@@ -42,33 +42,33 @@ public:
 
 	int set(key_type key, val_type val, index_type size)
 	{
+		
+		//convert val (void *) to string
+		char *char_val = (char*) (val);
+		std::string str_val(char_val);
+		std::string set_kv = url_put_k_v + key + "/" + str_val;
+		char * setstr = new char [set_kv.length()+1];
+		std::strcpy (setstr, set_kv.c_str());
+		
 		if(curl_)
 	       	{
+			//auto headers = curl_slist_append(headers, client_id_header);
+    			//auto headers = curl_slist_append(headers, "Content-Type: application/json");
 
+    			//curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers); 
+    			curl_easy_setopt(curl_, CURLOPT_URL, setstr);  
+    			curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "PUT"); /* !!! */
 
-			//convert val (void *) to string
-			char *char_val = (char*) (val);
-			std::string str_val(char_val);
-			std::string set_kv = url_put_k_v + key + "/" + str_val;
-			char * setstr = new char [set_kv.length()+1];
-			std::strcpy (setstr, set_kv.c_str());
+    			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, json_struct); /* data goes here */
+	
+    			auto res = curl_easy_perform(curl_);
+
+    			//curl_slist_free_all(headers);
+    			curl_easy_cleanup(curl_);
+
  
-		    	/* HTTP PUT please */ 
-    			curl_easy_setopt(curl_, CURLOPT_PUT, 1L);
-			/* specify target URL, and note that this URL should include a file
-       			name, not only a directory */ 
-			curl_easy_setopt(curl_, CURLOPT_URL, set_kv);
- 
-   			auto res = curl_easy_perform(curl_);
- 
-    			res = curl_easy_perform(curl_);
-   			 /* Check for errors */ 
-   			if(res != CURLE_OK)
-     				fprintf(stderr, "curl_easy_perform() failed: %s\n",
-              			curl_easy_strerror(res));
-			curl_easy_cleanup(curl_);
 		}
-		curl_global_cleanup();		
+		curl_global_cleanup();
 		return 0;
 	}
 
@@ -148,7 +148,7 @@ public:
     			curl_easy_cleanup(curl_);
 
   		}
-		return memused_;
+		return memused_; 
 	}
 
 
