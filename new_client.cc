@@ -65,17 +65,15 @@ public:
 		if(curl_) 
   		{
     			curl_easy_setopt(curl_, CURLOPT_URL, cstr);
-    /* example.com is redirected, so we tell libcurl to follow redirection */ 
    			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
- 
-    /* Perform the request, res will get the return code */ 
+    			/* Perform the request, res will get the return code */ 
    			auto res = curl_easy_perform(curl_);
-    /* Check for errors */ 
+  			/* Check for errors */ 
     			if(res != CURLE_OK)
 				fprintf(stderr, "curl_easy_perform() failed: %s\n",
              			curl_easy_strerror(res));
  
-    /* always cleanup */ 
+			    /* always cleanup */ 
     			curl_easy_cleanup(curl_);
   		}
 		return 0;
@@ -89,6 +87,21 @@ public:
 
 	index_type space_used() const
 	{
+
+		if(curl_) 
+  		{
+    			curl_easy_setopt(curl_, CURLOPT_URL, url_get_memsize);
+   			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
+    			/* Perform the request, res will get the return code */ 
+   			auto res = curl_easy_perform(curl_);
+  			/* Check for errors */ 
+    			if(res != CURLE_OK)
+				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+             			curl_easy_strerror(res));
+ 
+			    /* always cleanup */ 
+    			curl_easy_cleanup(curl_);
+  		}
 		return memused_;
 	}
 
