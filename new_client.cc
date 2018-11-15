@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <curl/curl.h>
 
+#include <cstring>
+
 const char* url_get_k = "http://0.0.0.0:18080/key/";
 const char* url_put_k_v = "http://0.0.0.0:18080/key/";
-const char* url_delete_k = "http://0.0.0.0:18080/key/";
+const char* url_del_k = "http://0.0.0.0:18080/key/";
 const char* url_head_k = "http://0.0.0.0:18080/key/";
 const char* url_get_memsize = "http://0.0.0.0:18080/memsize";
 const char* url_post = "http://0.0.0.0:18080/shutdown";
@@ -20,13 +22,13 @@ struct Cache::Impl
 	index_type memused_;
 	index_type newest_;
 	std::unordered_map<std::string, std::tuple<val_type, index_type, index_type>> unorderedmap_;
-
 	CURL* curl_;
 public:
 	Impl(index_type maxmem, hash_func hasher) 
-	: maxmem_(maxmem), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(),
+	: maxmem_(maxmem), hasher_(hasher), memused_(0), newest_(0), unorderedmap_(), 
 	curl_(curl_easy_init())
 	{
+
 	}
 	~Impl()
 	{
@@ -40,6 +42,29 @@ public:
 
 	int set(key_type key, val_type val, index_type size)
 	{
+		if(curl_)
+	       	{
+
+			std::string set_kv = url_put_k_v + key + "/" + val;
+			char * setstr = new char [set_kv.length()+1];
+			std::strcpy (setstr, set_kv.c_str());
+ 
+		    	/* HTTP PUT please */ 
+    			curl_easy_setopt(curl_, CURLOPT_PUT, 1L);
+			/* specify target URL, and note that this URL should include a file
+       			name, not only a directory */ 
+			curl_easy_setopt(curl_, CURLOPT_URL, set_kv);
+ 
+   			auto res = curl_easy_perform(curl_);
+ 
+    			res = curl_easy_perform(curl_);
+   			 /* Check for errors */ 
+   			if(res != CURLE_OK)
+     				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+              			curl_easy_strerror(res));
+			curl_easy_cleanup(curl_);
+		}
+		curl_global_cleanup();		
 		return 0;
 	}
 
@@ -57,20 +82,21 @@ public:
 
 */              
 		std::string get_key = url_get_k + key;
+		char * cstr = new char [get_key.length()+1];
+		std::strcpy (cstr, get_key.c_str());
+
 		if(curl_) 
   		{
-    			curl_easy_setopt(curl_, CURLOPT_URL, url_get_k);
-    /* example.com is redirected, so we tell libcurl to follow redirection */ 
+    			curl_easy_setopt(curl_, CURLOPT_URL, cstr);
    			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
- 
-    /* Perform the request, res will get the return code */ 
+    			/* Perform the request, res will get the return code */ 
    			auto res = curl_easy_perform(curl_);
-    /* Check for errors */ 
+  			/* Check for errors */ 
     			if(res != CURLE_OK)
 				fprintf(stderr, "curl_easy_perform() failed: %s\n",
              			curl_easy_strerror(res));
  
-    /* always cleanup */ 
+			    /* always cleanup */ 
     			curl_easy_cleanup(curl_);
   		}
 		return 0;
@@ -79,11 +105,45 @@ public:
 	// This deletes a (key, tuple) entry from the map
 	int del(key_type key)
 	{
+		std::string del_key = url_del_k + key;
+		char * delstr = new char [del_key.length()+1];
+		std::strcpy (delstr, del_key.c_str());
+		if(curl_)
+		{
+
+			curl_easy_setopt(curl_, CURLOPT_CUSTOMREQUEST, "DELETE");
+			curl_easy_setopt(curl_, CURLOPT_URL, delstr);
+			curl_easy_setopt(curl_, CURLOPT_POSTFIELDS, "{\"key\": \"value\"}");
+			struct curl_slist *headers = NULL;
+
+			headers = curl_slist_append(headers, "content-type: application/json");
+			curl_easy_setopt(curl_, CURLOPT_HTTPHEADER, headers);
+			CURLcode ret = curl_easy_perform(curl_);
+			// do something...
+			curl_slist_free_all(headers);
+			curl_easy_cleanup(curl_);
+		}
 		return 0;
 	}
 
 	index_type space_used() const
 	{
+
+		if(curl_) 
+  		{
+    			curl_easy_setopt(curl_, CURLOPT_URL, url_get_memsize);
+   			//curl_easy_setopt(curl_, CURLOPT_FOLLOWLOCATION, 1L);
+    			/* Perform the request, res will get the return code */ 
+			auto res = curl_easy_perform(curl_);
+  			/* Check for errors */ 
+    			if(res != CURLE_OK)
+				fprintf(stderr, "curl_easy_perform() failed: %s\n",
+             			curl_easy_strerror(res));
+ 
+			    /* always cleanup */ 
+    			curl_easy_cleanup(curl_);
+
+  		}
 		return memused_;
 	}
 
