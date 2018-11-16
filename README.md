@@ -6,6 +6,9 @@ Our client is called client.cc. We are using the libcurl library. To use, instal
 To compile the client, enter ```g++ -Wall -Wextra -pedantic client.cc frameworktest.cc -o client -lcurl```.
 Run with ```./client``` on a different terminal window. Currently set to work with server address 0.0.0.0:18080
 
+Our tests currently do not pass for the client side, as set (for the client) does not properly work. This is because all of our tests rely on the set function working. However, on the server side, we can clearly see get, delete, and memsize requests going through from the client. To test the server commands, we used curl -X <METHOD> http://127.0.0.1:18080/<param> to test each command/method. Thank you for reading!
+
+
 # HW2-Hash-it-out
 Sierra and Mercy's Cache homework assignment for CSCI 389 (If possible, view on your favorite text editor - Github's README format is messy.)
 
